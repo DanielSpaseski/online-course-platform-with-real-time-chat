@@ -67,13 +67,6 @@ class CourseListView(ListView):
         else:
             queryset = queryset.order_by('-created_at')
 
-        print(f"🔍 Search: {search_query}")
-        print(f"📁 Category: {category_id}")
-        print(f"📊 Difficulty: {difficulty}")
-        print(f"💰 Price: {price_filter}")
-        print(f"🔀 Sort: {sort_by}")
-        print(f"📋 Results: {queryset.count()}")
-
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -214,6 +207,17 @@ class LessonDetailView(LoginRequiredMixin, View):
         lesson = get_object_or_404(Lesson, id=lesson_id, course__slug=slug)
         course = lesson.course
 
+        # 🆕 Конвертирај YouTube URL во embed формат
+        if lesson.lesson_type == 'video' and lesson.video_url:
+            if 'watch?v=' in lesson.video_url:
+                # https://www.youtube.com/watch?v=VIDEO_ID
+                video_id = lesson.video_url.split('watch?v=')[1].split('&')[0]
+                lesson.video_url = f'https://www.youtube.com/embed/{video_id}'
+            elif 'youtu.be/' in lesson.video_url:
+                # https://youtu.be/VIDEO_ID
+                video_id = lesson.video_url.split('youtu.be/')[1].split('?')[0]
+                lesson.video_url = f'https://www.youtube.com/embed/{video_id}'
+
         # Провери дали е запишан
         enrollment = None
         is_completed = False
@@ -242,8 +246,8 @@ class LessonDetailView(LoginRequiredMixin, View):
             'lesson': lesson,
             'quiz_obj': Quiz.objects.filter(lesson=lesson).first(),
             'all_lessons': all_lessons,
-            'next_lesson': next_lesson,  # 🆕 НОВО
-            'prev_lesson': prev_lesson,  # 🆕 НОВО
+            'next_lesson': next_lesson,
+            'prev_lesson': prev_lesson,
             'enrollment': enrollment,
             'is_completed': is_completed,
         }

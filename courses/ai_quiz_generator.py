@@ -35,13 +35,13 @@ def extract_text_from_pdf(pdf_file):
         pdf_file.seek(0)
         extracted = text.strip()
 
-        print(f"📄 Извлечен текст: {len(extracted)} карактери")
-        print(f"📝 Почеток: {extracted[:200]}...")
+        print(f"Извлечен текст: {len(extracted)} карактери")
+        print(f"Почеток: {extracted[:200]}...")
 
         return extracted if len(extracted) > 50 else None
 
     except Exception as e:
-        print(f"❌ Грешка при извлекување на текст: {e}")
+        print(f"Грешка при извлекување на текст: {e}")
         return None
 
 
@@ -51,7 +51,7 @@ def generate_quiz_from_text(text, num_questions=5):
     api_key = getattr(settings, 'GEMINI_API_KEY', None)  # Користиме истиотклуч
 
     if not api_key:
-        print("❌ GEMINI_API_KEY не е сетиран (користиме го за Groq)")
+        print("GEMINI_API_KEY не е сетиран (користиме Groq)")
         return generate_fallback_quiz(num_questions)
 
     url = "https://api.groq.com/openai/v1/chat/completions"
@@ -115,22 +115,22 @@ def generate_quiz_from_text(text, num_questions=5):
     }
 
     try:
-        print(f"🚀 Праќам барање до Groq API...")
+        print(f"Праќам барање до Groq API...")
         response = requests.post(url, headers=headers, json=payload, timeout=45)
 
         if response.status_code == 200:
             result = response.json()
             content = result['choices'][0]['message']['content']
 
-            print(f"✅ Примен одговор од API")
-            print(f"📝 Почеток на одговорот: {content[:200]}...")
+            print(f"Примен одговор од API")
+            print(f"Почеток на одговорот: {content[:200]}...")
 
             # Parse JSON
             quiz_data = json.loads(content)
 
             # Валидација
             if 'questions' not in quiz_data:
-                print("❌ JSON нема 'questions' клуч")
+                print("JSON нема 'questions' клуч")
                 return generate_fallback_quiz(num_questions)
 
             questions = quiz_data['questions']
@@ -139,7 +139,7 @@ def generate_quiz_from_text(text, num_questions=5):
             valid_questions = []
             for idx, q in enumerate(questions, 1):
                 if 'answers' not in q or len(q['answers']) < 2:
-                    print(f"⚠️ Прашање {idx} нема доволно одговори, додавам...")
+                    print(f"Прашање {idx} нема доволно одговори, додавам...")
                     # Додај недостасувачки одговори
                     while len(q.get('answers', [])) < 4:
                         q.setdefault('answers', []).append({
@@ -150,29 +150,29 @@ def generate_quiz_from_text(text, num_questions=5):
                 # Провери дали има барем еден точен одговор
                 has_correct = any(a.get('is_correct') for a in q.get('answers', []))
                 if not has_correct and q.get('answers'):
-                    print(f"⚠️ Прашање {idx} нема точен одговор, го означувам првиот")
+                    print(f"Прашање {idx} нема точен одговор, го означувам првиот")
                     q['answers'][0]['is_correct'] = True
 
                 valid_questions.append(q)
 
             quiz_data['questions'] = valid_questions
 
-            print(f"✅ Валидирани {len(valid_questions)} прашања")
+            print(f"Валидирани {len(valid_questions)} прашања")
             return quiz_data
 
         else:
-            print(f"❌ API грешка: {response.status_code}")
+            print(f"API грешка: {response.status_code}")
             print(f"Response: {response.text[:500]}")
             return generate_fallback_quiz(num_questions)
 
     except requests.exceptions.Timeout:
-        print("❌ Timeout - API не одговори на време")
+        print("Timeout - API не одговори на време")
         return generate_fallback_quiz(num_questions)
     except json.JSONDecodeError as e:
-        print(f"❌ JSON parse грешка: {e}")
+        print(f"JSON parse грешка: {e}")
         return generate_fallback_quiz(num_questions)
     except Exception as e:
-        print(f"❌ Непозната грешка: {e}")
+        print(f"Непозната грешка: {e}")
         import traceback
         traceback.print_exc()
         return generate_fallback_quiz(num_questions)
@@ -180,7 +180,7 @@ def generate_quiz_from_text(text, num_questions=5):
 
 def generate_fallback_quiz(num_questions=5):
     """Fallback квиз ако API не работи"""
-    print("⚠️ Користам fallback квиз (AI не е достапен)")
+    print("Користам fallback квиз (AI не е достапен)")
 
     return {
         "questions": [

@@ -55,15 +55,14 @@
                     {% if lesson.lesson_type == 'video' %}
                         {% if lesson.video_url %}
                             <div class="ratio ratio-16x9 mb-4 shadow-sm rounded overflow-hidden">
-                                <iframe src="{{ lesson.video_url }}"
-                                        allowfullscreen
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                                <iframe
+                                    src="{{ lesson.video_url }}"
+                                    allowfullscreen
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    frameborder="0"
+                                    loading="lazy">
                                 </iframe>
-                            </div>
-                            <div class="alert alert-info small">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <strong>Совет:</strong> Ако видеото не се вчитува, користете го YouTube embed форматот:
-                                <code>https://www.youtube.com/embed/VIDEO_ID</code>
                             </div>
                         {% elif lesson.video_file %}
                             <div class="ratio ratio-16x9 mb-4 shadow-sm rounded overflow-hidden">
@@ -129,35 +128,34 @@
                     {% endif %}
 
                     {# Навигација низ лекции #}
-<div class="d-flex justify-content-between mt-5 pt-4 border-top">
-    {# Претходна лекција #}
-    {% if prev_lesson %}
-        <a href="{% url 'courses:lesson_detail' lesson.course.slug prev_lesson.id %}"
-           class="btn btn-outline-primary">
-            <i class="bi bi-arrow-left me-2"></i>Претходна лекција
-        </a>
-    {% else %}
-        <a href="{% url 'courses:detail' lesson.course.slug %}"
-           class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Назад кон курс
-        </a>
-    {% endif %}
+                    <div class="d-flex justify-content-between mt-5 pt-4 border-top">
+                        {# Претходна лекција #}
+                        {% if prev_lesson %}
+                            <a href="{% url 'courses:lesson_detail' lesson.course.slug prev_lesson.id %}"
+                               class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-left me-2"></i>Претходна лекција
+                            </a>
+                        {% else %}
+                            <a href="{% url 'courses:detail' lesson.course.slug %}"
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Назад кон курс
+                            </a>
+                        {% endif %}
 
-    {# Следна лекција или назад #}
-    {% if next_lesson %}
-        <a href="{% url 'courses:lesson_detail' lesson.course.slug next_lesson.id %}"
-           class="btn btn-primary">
-            Следна лекција<i class="bi bi-arrow-right ms-2"></i>
-        </a>
-    {% else %}
-        {# Ова е последната лекција #}
-        <a href="{% url 'courses:detail' lesson.course.slug %}"
-           class="btn btn-success">
-            <i class="bi bi-arrow-left me-2"></i>Назад кон курс
-        </a>
-    {% endif %}
-</div>
-
+                        {# Следна лекција или назад #}
+                        {% if next_lesson %}
+                            <a href="{% url 'courses:lesson_detail' lesson.course.slug next_lesson.id %}"
+                               class="btn btn-primary">
+                                Следна лекција<i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                        {% else %}
+                            {# Ова е последната лекција #}
+                            <a href="{% url 'courses:detail' lesson.course.slug %}"
+                               class="btn btn-success">
+                                <i class="bi bi-arrow-left me-2"></i>Назад кон курс
+                            </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -165,19 +163,18 @@
         {# Sidebar #}
         <div class="col-lg-3">
             {# Прогрес #}
-{# Прогрес #}
-{% if enrollment %}
-<div class="card shadow-sm border-0 mb-4 bg-primary text-white p-4 text-center rounded">
-    <h6 class="small fw-bold opacity-75 mb-2">ТВОЈОТ ПРОГРЕС</h6>
-    <h2 class="display-6 fw-bold mb-2">{{ enrollment.progress_percentage|floatformat:0 }}%</h2>
-    <div class="progress bg-white bg-opacity-25" style="height: 8px;">
-        <div class="progress-bar bg-white"
-             role="progressbar"
-             style="width: {{ enrollment.progress_percentage }}%">
-        </div>
-    </div>
-</div>
-{% endif %}
+            {% if enrollment %}
+            <div class="card shadow-sm border-0 mb-4 bg-primary text-white p-4 text-center rounded">
+                <h6 class="small fw-bold opacity-75 mb-2">ТВОЈОТ ПРОГРЕС</h6>
+                <h2 class="display-6 fw-bold mb-2">{{ enrollment.progress_percentage|floatformat:0 }}%</h2>
+                <div class="progress bg-white bg-opacity-25" style="height: 8px;">
+                    <div class="progress-bar bg-white"
+                         role="progressbar"
+                         style="width: {{ enrollment.progress_percentage }}%">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
             {# Листа на лекции #}
             <div class="card shadow-sm border-0">
